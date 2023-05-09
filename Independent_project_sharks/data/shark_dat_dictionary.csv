@@ -1,0 +1,9 @@
+﻿Variable,Description,Unit
+exp,"The types of primary antibody placed into the experiment, the flourescene it lights up at, and the microscope used to see the experiment ",
+species,The species common name most people know it by,
+dev_stage,The developmental stage for the animal to be at,
+tissue,The sensory neuron ganlia the neuron is in,
+area,The area of the neuron ,µm^2
+x ,The width of the neuron,µm
+y ,The height of the neuron,µm
+perimeter ,The perimeter of the neuron,µm

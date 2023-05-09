@@ -2,10 +2,149 @@
 title: "Independent_project_shark"
 author: "Kenta"
 date: "2023-05-09"
-output: html_document
+output: 
+  html_document:
+    toc: TRUE
+    toc_float: TRUE
+    theme: cerulean
+    highlight: breezedark
+    css: styles.css
+    fig_width: 7
+    fig_height: 6
+    fig_caption: true
 ---
-
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE,
+                      message = FALSE,
+                      warning = FALSE,
+                      fig.path = "../output/")
+```
+
+# Introduction Into the Pain and Nociceptors Neurons of Sharks
+
+A lot of people know about what pain is but not so much about people know about what nociceptor is? Well its actually the pain after the pain.
+
+Many research has been done on mammals, especially mice and rats, but not so much has been done on sharks. One way to do that is observing the area of neurons in the sensory neuron. Especially in the dorsal root ganglion (DRG) and trigeminal ganglion (TG). 
+
+We are testing if the sharks actually do not feel any nociception or not. In the chart provided below I have data on DRG and TG's of sting rays (_Urobatis_ _hallari_), pre-hatched and adult.   
+
+# Loading Library
+
+```{r}
+library(tidyverse)
+library(here) 
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(scales)
+library(patchwork)
+library(DT)
+```
+
+# Loading Data
+
+```{r}
+drg_tg_data <- read_csv(here("Independent_project_sharks","data","20220524_masterlist.csv")) 
+
+data_dictionary <-read_csv (here("Independent_project_sharks","data","shark_dat_dictionary.csv")) 
+```
+
+# Data Dictionary
+
+```{r}
+data_dictionary
+```
+
+
+# Viewing and Cleaning the Data
+
+```{r}
+view(drg_tg_data)
+
+clean_drg_tg_data <- drg_tg_data %>%
+  select(-exp) %>%
+  unite("species-tissue-dev", c(species, tissue, dev_stage), sep = " ", remove = FALSE) %>%
+  drop_na()
+  
+clean_drg_tg_data
+```
+
+
+
+# Plotting the graph
+
+```{r}
+types_of_species_cells_used <- clean_drg_tg_data %>%
+  ggplot(aes(x=`species-tissue-dev`,fill=`species-tissue-dev`)) +
+  geom_histogram(stat="count") +
+  labs(title = "Types of Species and Age Used In the Experiment",
+       x= "Species, Tissues, and Age",
+       y = "Number Measured") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 0.5)) +
+  scale_y_continuous(labels = comma)+
+  theme_bw()+
+  scale_fill_manual(values = c("blue", "red", "green", "purple", "yellow"))
+  
+
+types_of_species_cells_used
+```
+
+```{r}
+P1 <- clean_drg_tg_data%>%
+  filter(species == "Bamboo shark", dev_stage == "32")%>%
+  ggplot(aes(x=x, y=y, color = tissue))+
+  geom_point(alpha = 0.5)+
+  scale_color_manual(values = c("blue", "red"))+
+  labs(title = "Sensory Neurons in \nP32 Bamboo Shark",
+       x = "Width Size",
+       y = "Length Size",
+       color = "Group") +
+  theme_bw()
+
+P2 <-   clean_drg_tg_data%>%
+  filter(species == "Bamboo shark", dev_stage == "Pre-hatch")%>%
+  ggplot(aes(x=x, y=y, color = tissue))+
+  geom_point(alpha = 0.5)+
+  scale_color_manual(values = c("blue", "red"))+
+  labs(title = "Sensory Neurons in \nPrehatch Bamboo Shark",
+       x = "Width Size",
+       y = "Length Size",
+       color = "Group") +
+  theme_bw()
+
+P1+P2+
+  plot_layout(guides='collect')+   
+  plot_annotation(tag_levels='I')
+```
+
+```{r}
+clean_drg_tg_data %>%
+  filter(species != "Cat shark") %>%
+  ggplot(aes(x=`species-tissue-dev`, y= area, fill=`species-tissue-dev`)) +
+  geom_boxplot() +
+  labs(title = "Area of TG and DRG in Sting Ray",
+       x= "Tissues Used",
+       y = "Area") +
+  scale_x_discrete(labels = function(x) str_wrap(x, width = 0.5))+
+    theme_bw() +
+  theme(legend.position = "none")
+```
+
+```{r}
+DRG_vs_TG_stats <- clean_drg_tg_data%>%
+  filter(species %in% "Bamboo shark")%>%
+  pivot_longer(cols = area:perimeter, 
+               names_to = "Variables", 
+               values_to = "Values")%>%
+   group_by(Variables, `species-tissue-dev`) %>% 
+  summarise(mean_vals = mean(Values, na.rm = TRUE), 
+            sd_vals = sd(Values, na.rm = TRUE))%>%
+  select(Variables, mean_vals, sd_vals, `species-tissue-dev`)%>%
+  ggplot(aes(x=sd_vals, y= mean_vals, color = `species-tissue-dev`))+
+  geom_line()
+  
+
+DRG_vs_TG_stats 
+ 
 ```
 
