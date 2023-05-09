@@ -16,5 +16,5 @@ data_dictionary <-read_csv (here("Independent_project_sharks","data","shark_dat_
 
 The Sting Rays sensory nearon's, mostly dorsal root ganglia (DRG) and trigeminal genglia (TG)'s, width (x), length (y), area, perimeter, and the tissue where the neuron was located.
 
-![image]([https://turnto10.com/resources/media/4c89e1cc-3fb9-4cd7-b42f-0e598426568e-medium16x9_1280x720_50615P00AWJRH.jpg])
+![](https://turnto10.com/resources/media/4c89e1cc-3fb9-4cd7-b42f-0e598426568e-medium16x9_1280x720_50615P00AWJRH.jpg)
 
